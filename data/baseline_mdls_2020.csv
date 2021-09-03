@@ -1,0 +1,17 @@
+cdmo_name,base_mdl,group
+NH4F,0.002,nutrients
+TKN,0.08,nutrients
+TKNF,0.08,nutrients
+NO2F,0.002,nutrients
+NO3F,0.004,nutrients
+NO23F,0.004,nutrients
+PO4F,0.004,nutrients
+TP,0.002,nutrients
+TSS,2,nutrients
+Turb,0.1,nutrients
+FECCOL_CFU,2,nutrients
+ENTERO,1,nutrients
+DOC,0.5,nutrients
+CHLA_N,0.55,plantpigments
+UncCHLA_N,0.4,plantpigments
+PHEA,0.6,plantpigments
