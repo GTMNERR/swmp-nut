@@ -43,7 +43,7 @@ glimpse(env)
 rm(mysheets_fromexcel, 
    tempdf, i, mysheetlist)
 
-## 02.1 wrangle-tidy field data ---------------------------------------------
+# 02 wrangle-tidy field data ---------------------------------------------
 
 env2 <- env %>%
   dplyr::mutate(date_sampled = lubridate::ymd_hm(paste(date, time_24_hr)),
