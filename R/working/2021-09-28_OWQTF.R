@@ -261,3 +261,71 @@ ggplot(aes(x = YEAR, y = CHLA_agm, group = 1)) +
            color = "blue",
            label = "State Threshold 4.3 (\U00B5g/L)")
 
+# pine island
+NUT_yearly  %>% 
+  dplyr::filter(STATION_CODE == "gtmpinut") %>% 
+  ggplot(aes(x = YEAR, y = CHLA_agm, group = 1)) +
+  geom_line() +
+  geom_point(aes(color = CHLA_agm > 6.6), size = 3) +
+  geom_hline(yintercept = 6.6, color = "blue",
+             linetype = "dashed") +
+  scale_color_manual(name = "", values = c("black", "red")) +
+  theme_classic() +
+  theme(legend.position = "none",
+        axis.text = element_text(color = "black"),
+        axis.text.x = element_text(angle = 45, 
+                                   vjust = 0.6)) +
+  labs(x = "",
+       y = "Geo.Mean Annual Chlorophyll-a (\U00B5g/L)",
+       title = "Pine Island") +
+  annotate("text",
+           x = "2004",
+           y = 8,
+           color = "blue",
+           label = "State Threshold 6.6 (\U00B5g/L)")
+
+# san sebastian
+NUT_yearly  %>% 
+  dplyr::filter(STATION_CODE == "gtmssnut") %>% 
+  ggplot(aes(x = YEAR, y = CHLA_agm, group = 1)) +
+  geom_line() +
+  geom_point(aes(color = CHLA_agm > 4.0), size = 3) +
+  geom_hline(yintercept = 4.0, color = "blue",
+             linetype = "dashed") +
+  scale_color_manual(name = "", values = c("black", "red")) +
+  theme_classic() +
+  theme(legend.position = "none",
+        axis.text = element_text(color = "black"),
+        axis.text.x = element_text(angle = 45, 
+                                   vjust = 0.6)) +
+  labs(x = "",
+       y = "Geo.Mean Annual Chlorophyll-a (\U00B5g/L)",
+       title = "San Sebastian") +
+  annotate("text",
+           x = "2004",
+           y = 6,
+           color = "blue",
+           label = "State Threshold 4.0 (\U00B5g/L)")
+
+# fort matanzas
+NUT_yearly  %>% 
+  dplyr::filter(STATION_CODE == "gtmfmnut") %>% 
+  ggplot(aes(x = YEAR, y = CHLA_agm, group = 1)) +
+  geom_line() +
+  geom_point(aes(color = CHLA_agm > 5.5), size = 3) +
+  geom_hline(yintercept = 5.5, color = "blue",
+             linetype = "dashed") +
+  scale_color_manual(name = "", values = c("black", "red")) +
+  theme_classic() +
+  theme(legend.position = "none",
+        axis.text = element_text(color = "black"),
+        axis.text.x = element_text(angle = 45, 
+                                   vjust = 0.6)) +
+  labs(x = "",
+       y = "Geo.Mean Annual Chlorophyll-a (\U00B5g/L)",
+       title = "Fort Matanzas") +
+  annotate("text",
+           x = "2004",
+           y = 6,
+           color = "blue",
+           label = "State Threshold 5.5 (\U00B5g/L)")
