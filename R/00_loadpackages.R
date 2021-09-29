@@ -4,6 +4,7 @@ library(readxl) # read excel files
 library(janitor) # simple tools to clean dirty data
 library(here) # a simpler way to find your files
 library(SWMPr) # working with SWMP data from the NERRS
+library(SWMPrExtension) # expanded plotting and analysis of SWMP data from NERRS
 library(xlsx) # to export df as .xlsx files
 
 # 02 tidy and wrangle ----
