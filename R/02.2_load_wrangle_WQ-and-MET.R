@@ -18,8 +18,7 @@ pi_hist <- SWMPr::import_local(path = here::here('data',
 ss_hist <- SWMPr::import_local(path = here::here('data',
                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                station_code = 'gtmsswq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) %>% 
-  dplyr::mutate(station = 'gtmsswq')
+  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5'))
 fm_hist <- SWMPr::import_local(path = here::here('data',
                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                station_code = 'gtmfmwq') %>% 
@@ -53,8 +52,7 @@ ss_2021 <- SWMPr::import_local(path = here::here('data',
                                                  '2021',
                                                  'WQ-MET'), 
                                station_code = 'gtmsswq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) %>% 
-  dplyr::mutate(station = 'gtmsswq')
+  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5'))
 fm_2021 <- SWMPr::import_local(path = here::here('data',
                                                  '2021',
                                                  'WQ-MET'), 
@@ -94,3 +92,5 @@ WQ <- dplyr::bind_rows(WQ_hist, WQ_2021)
 
 rm(MET_2021, MET_hist, 
    WQ_2021, WQ_hist)
+
+ss <- dplyr::bind_rows(ss_hist, ss_2021) %>% select(-station)

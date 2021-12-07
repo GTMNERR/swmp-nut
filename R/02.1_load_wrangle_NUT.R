@@ -82,18 +82,27 @@ rm(nut_hist, nut_2021)
 
 
 # 04 wrangle to swmpr -----------------------------------------------------
-# The `swmpr()` call needs to have just datetimestamp and data+qa columns, so remove the extras, while also making names lower case.  
-timezone <- "America/Jamaica" # needs a timezone
-
-names(NUT) <- tolower(names(NUT))
-PC_nut <- NUT %>% filter(station_code == "gtmpcnut") %>% select(-station_code)
-PC_nut$date_time_stamp <- as.POSIXct(PC_nut$date_time_stamp, tz = timezone, format = '%m/%d/%Y %H:%M')
-swmp_pc <- swmpr(PC_nut, "gtmpcnut")
-
-class(swmp1)
-str(swmp1)
-
-
+# # The `swmpr()` call needs to have just datetimestamp and data+qa columns, so remove the extras, while also making names lower case.  
+# timezone <- "America/Jamaica" # needs a timezone
+# 
+# names(NUT) <- tolower(names(NUT))
+# PC_nut <- NUT %>% 
+#   filter(station_code == "gtmpcnut") %>% 
+#   select(-station_code) %>% 
+#   mutate(date_time_stamp = as.POSIXct(PC_nut$date_time_stamp, 
+#                                       tz = timezone, 
+#                                       format = '%m/%d/%Y %H:%M')) %>% 
+#   rename(datetimestamp = date_time_stamp)
+# 
+# # swmpr wants data frame, not tibble
+# swmp_pc <- swmpr(as.data.frame(PC_nut), "gtmpcnut")
+# 
+# # check object
+# class(swmp_pc)
+# str(swmp_pc)
+# 
+# # try the qaqc functions
+# swmp_pc %>% SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5'))
 
 
 ## 99 export .RData ----
