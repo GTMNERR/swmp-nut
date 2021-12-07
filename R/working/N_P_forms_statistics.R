@@ -2,6 +2,10 @@
 # Nitrogen partitioning
 # By SWMP Station
 
+# load data
+# source(here::here('R', '00_loadpackages.R'))
+# source(here::here('R', '02.1_load_wrangle_NUT.R'))
+
 # 01 pull out and QAQC each parameter, plus conversions to micro Moles ----
 # keeping only data collected at DEP lab (2018-present)
 NH4 <- NUT %>% 
@@ -140,7 +144,9 @@ sites <- bind_rows(pi, ss, fm, pc) %>%
           mutate(N_limit = 100*(DINuM/(DINuM + 1.6)),
                  P_limit = 100*(DIPuM/(DIPuM +0.24)),
                  TN_TPuM = TNuM/TPuM,
-                 DIN_DIPuM = DINuM/DIPuM)
+                 DIN_DIPuM = DINuM/DIPuM,
+                 N_sed_mg = N_sed * 14.01/1000,
+                 N_phyto_mg = N_phyto * 14.01/1000)
 
 # clean-up environment
 rm(pi, pi_fit, ss, ss_fit, fm, fm_fit, pc, pc_fit)
