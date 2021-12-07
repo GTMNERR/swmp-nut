@@ -11,8 +11,9 @@ library(xlsx) # to export df as .xlsx files
 library(tidyverse) # because...tidyverse (ggplot2, tidyr, dplyr)
 library(lubridate) # dates and times
 
-# 03 pulling information ----
+# 03 pulling information and statistics ----
 library(broom) # convert statistical analysis objects into tidy tibbles
+library(psych)
 
 # 04 markdown ----
 library(knitr)
@@ -24,6 +25,8 @@ library(cowplot) # additional themes for ggplot2
 library(patchwork) # grid graphics
 library(scales) # scale functions for visualization
 library(plotly) # create interactive web graphics - use for html output files
+library(gganimate) # create animated graphs
+library(leaflet) # making maps
 library(ggcorrplot) # visualization of correlation matrix using ggplot2
 # or install the latest ggcorrplot from GitHub
 # Install
