@@ -12,48 +12,50 @@ source(here::here('R', '02.1_load_wrangle_NUT.R'))
 NH4 <- NUT %>% 
         filter(MONITORING_PROGRAM == 1 & DATE_TIME_STAMP > "2018-01-01") %>% 
         select(STATION_CODE, DATE_TIME_STAMP, NH4F, F_NH4F) %>% 
-        filter(!grepl("CUS|SBL", F_NH4F)) %>% 
+        filter(!grepl("CUS|-3", F_NH4F)) %>% 
         mutate(NH4uM = NH4F * (1000/14.01))
 
 NO23 <- NUT %>% 
           filter(MONITORING_PROGRAM == 1 & DATE_TIME_STAMP > "2018-01-01") %>% 
           select(STATION_CODE, DATE_TIME_STAMP, NO23F, F_NO23F) %>% 
-          filter(!grepl("CUS|SCC|SBL", F_NO23F)) %>% 
+          filter(!grepl("CUS|SCC|-3", F_NO23F)) %>% 
           mutate(NO23uM = NO23F * (1000/14.01))
 
 TKN <- NUT %>% 
         filter(MONITORING_PROGRAM == 1 & DATE_TIME_STAMP > "2018-01-01") %>% 
         select(STATION_CODE, DATE_TIME_STAMP, TKN, F_TKN) %>% 
-        filter(!grepl("CUS|GQS|SCC|SBL", F_TKN)) %>% 
+        filter(!grepl("CUS|GQS|SCC|-3", F_TKN)) %>% 
         mutate(TKNuM = TKN * (1000/14.01))
 
 TKNF <- NUT %>% 
           filter(MONITORING_PROGRAM == 1 & DATE_TIME_STAMP > "2018-01-01") %>% 
           select(STATION_CODE, DATE_TIME_STAMP, TKNF, F_TKNF) %>% 
-          filter(!grepl("CUS|SCC|SBL", F_TKNF)) %>% 
+          filter(!grepl("CUS|SCC|-3", F_TKNF)) %>% 
           mutate(TKNFuM = TKNF * (1000/14.01))
 
 CHLA <- NUT %>% 
         filter(MONITORING_PROGRAM == 1 & DATE_TIME_STAMP > "2018-01-01") %>% 
         select(STATION_CODE, DATE_TIME_STAMP, CHLA_N, F_CHLA_N) %>% 
-        filter(!grepl("CUS|SBL", F_CHLA_N))
+        filter(!grepl("CUS|-3", F_CHLA_N))
 
 TSS <- NUT %>% 
         filter(MONITORING_PROGRAM == 1 & DATE_TIME_STAMP > "2018-01-01") %>% 
         select(STATION_CODE, DATE_TIME_STAMP, TSS, F_TSS) %>% 
-        filter(!grepl("CUS|CHB", F_TSS))
+        filter(!grepl("CUS|CHB|-3", F_TSS))
 
 DIP <- NUT %>% 
         filter(MONITORING_PROGRAM == 1 & DATE_TIME_STAMP > "2018-01-01") %>% 
+        filter(!grepl("2020-04-22", DATE_TIME_STAMP)) %>%
         select(STATION_CODE, DATE_TIME_STAMP, PO4F, F_PO4F) %>% 
-        filter(!grepl("CUS|CHB|SBL", F_PO4F)) %>% 
+        filter(!grepl("CUS|CHB|-3", F_PO4F)) %>% 
         rename(DIP = PO4F) %>% 
         mutate(DIPuM = DIP * (1000/30.97))
 
 TP <- NUT %>% 
         filter(MONITORING_PROGRAM == 1 & DATE_TIME_STAMP > "2018-01-01") %>% 
+        filter(!grepl("2020-04-22", DATE_TIME_STAMP)) %>%  # remove phosphorus from 2020-04
         select(STATION_CODE, DATE_TIME_STAMP, TP, F_TP) %>% 
-        filter(!grepl("CUS|SBL", F_TP)) %>% 
+        filter(!grepl("CUS|-3", F_TP)) %>% 
         mutate(TPuM = TP * (1000/30.97))
 
 SALT <- NUT %>% 
@@ -112,8 +114,8 @@ broom::tidy(pi_fit)
 broom::glance(pi_fit)
 
 pi <- pi %>% 
-  mutate(N_sed = 0.26*TSS,
-         N_phyto = -0.56*CHLA_N)
+  mutate(N_sed = 0.191*TSS,
+         N_phyto = 0.285*CHLA_N)
 
 # san sebastian
 ss <- nitro1 %>% filter(STATION_CODE == "gtmssnut" & PNuM > 0)
@@ -123,8 +125,8 @@ summary(ss_fit)
 broom::tidy(ss_fit)
 
 ss <- ss %>% 
-  mutate(N_sed = 0.297*TSS,
-         N_phyto = 0.469*CHLA_N)
+  mutate(N_sed = 0.272*TSS,
+         N_phyto = 0.329*CHLA_N)
 
 # fort matanzas
 fm <- nitro1 %>% filter(STATION_CODE == "gtmfmnut" & PNuM > 0)
@@ -134,8 +136,8 @@ summary(fm_fit)
 broom::tidy(fm_fit)
 
 fm <- fm %>% 
-  mutate(N_sed = 0.193*TSS,
-         N_phyto = 0.529*CHLA_N)
+  mutate(N_sed = 0.293*TSS,
+         N_phyto = 0.479*CHLA_N)
          
 
 # pellicer creek
@@ -146,8 +148,8 @@ summary(pc_fit)
 broom::tidy(pc_fit)
 
 pc <- pc %>% 
-  mutate(N_sed = 0.353*TSS,
-         N_phyto = 0.245*CHLA_N)
+  mutate(N_sed = 0.358*TSS,
+         N_phyto = 0.361*CHLA_N)
 
 
 # merge all sites back into one dataframe
@@ -167,7 +169,7 @@ rm(pi, pi_fit, ss, ss_fit, fm, fm_fit, pc, pc_fit)
 sites_calc <- sites %>%
   select(-DATE) %>% 
   group_by(STATION_CODE) %>% 
-  summarise(across(where(is.numeric), list(min = min, max = max, mean = mean), na.rm = TRUE))
+  summarise(across(where(is.numeric), list(min = min, max = max, med = median, mean = mean), na.rm = TRUE))
 
 count <- sites %>% 
   group_by(STATION_CODE) %>% 
@@ -188,8 +190,10 @@ write.xlsx(all, here::here("output", "data", "N_and_P_statistics.xlsx"))
 
 ## 07 plots ----
 
-### 07a frequency boxplots ----
+### 07a stacked bar plots ----
 
+# nitrogen stacked graphs
+# uM
 sites %>% 
   select(STATION_CODE, DATE, DINuM, DONuM, PNuM) %>% 
   rename(DIN = DINuM,
@@ -215,7 +219,7 @@ sites %>%
   theme_classic() +
   labs(x = '',
        y = "Nitrogen (\U3BCM)")
-
+# mgL
 sites %>% 
   mutate(STATION_CODE = factor(STATION_CODE,
                                levels = c("gtmpinut",
@@ -239,6 +243,78 @@ sites %>%
   theme_classic() +
   labs(x = '',
        y = "Nitrogen (mg/L)")
+
+# chla
+sites %>%
+  select(STATION_CODE, DATE, CHLA_N) %>% 
+  mutate(STATION_CODE = factor(STATION_CODE,
+                               levels = c("gtmpinut",
+                                          "gtmssnut",
+                                          "gtmfmnut",
+                                          "gtmpcnut"),
+                               labels = c("Pine Island",
+                                          "San Sebastian",
+                                          "Fort Matanzas",
+                                          "Pellicer Creek"))) %>% 
+  ggplot(aes(x = DATE, y = CHLA_N)) +
+  geom_col(fill = "forestgreen") +
+  facet_wrap(~STATION_CODE) +
+  scale_fill_discrete(name = "") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic() +
+  labs(x = '',
+       y = "Chlorophyll-a (\U3BCg/L)")
+
+# phos uM
+sites %>%
+  select(STATION_CODE, DATE, DIPuM, TPuM) %>% 
+  rename(DIP = DIPuM,
+         TP = TPuM) %>% 
+  mutate(STATION_CODE = factor(STATION_CODE,
+                               levels = c("gtmpinut",
+                                          "gtmssnut",
+                                          "gtmfmnut",
+                                          "gtmpcnut"),
+                               labels = c("Pine Island",
+                                          "San Sebastian",
+                                          "Fort Matanzas",
+                                          "Pellicer Creek"))) %>% 
+  ggplot(aes(x = DATE, group = STATION_CODE)) +
+  geom_col(aes(y = DIP)) +
+  geom_point(aes(y = TP)) +
+  facet_wrap(~STATION_CODE) +
+  scale_fill_discrete(name = "") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic() +
+  labs(x = '',
+       y = "Phosphorus (\U3BCM)")
+
+# phos mgL
+
+# boxplots
+
+# boxplot <- function(x) {
+#   
+#   x <- sym(x)
+#   
+# sites %>% 
+#   mutate(STATION_CODE = factor(STATION_CODE,
+#                                levels = c("gtmpinut",
+#                                           "gtmssnut",
+#                                           "gtmfmnut",
+#                                           "gtmpcnut"),
+#                                labels = c("Pine Island",
+#                                           "San Sebastian",
+#                                           "Fort Matanzas",
+#                                           "Pellicer Creek"))) %>% 
+#   ggplot(aes(x = STATION_CODE, y = !!x)) +
+#   geom_boxplot(aes(fill = STATION_CODE), alpha = 0.8) +
+#     theme_classic() +
+#     theme(legend.position = "") +
+#     labs(x = "Site")
+# }
+
+
 
 
 # # 0B 2003 - 2009 ----
