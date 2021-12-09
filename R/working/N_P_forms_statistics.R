@@ -220,7 +220,7 @@ sites %>%
   labs(x = '',
        y = "Nitrogen (\U3BCM)")
 # mgL
-sites %>% 
+sites %>%
   mutate(STATION_CODE = factor(STATION_CODE,
                                levels = c("gtmpinut",
                                           "gtmssnut",
@@ -270,6 +270,7 @@ sites %>%
   select(STATION_CODE, DATE, DIPuM, TPuM) %>% 
   rename(DIP = DIPuM,
          TP = TPuM) %>% 
+  filter(!(STATION_CODE == "gtmpcnut" & grepl("2020-06-02", DATE))) %>% # remove phos on 2020-06-02 due to QC
   mutate(STATION_CODE = factor(STATION_CODE,
                                levels = c("gtmpinut",
                                           "gtmssnut",
@@ -282,6 +283,7 @@ sites %>%
   ggplot(aes(x = DATE, group = STATION_CODE)) +
   geom_col(aes(y = DIP)) +
   geom_point(aes(y = TP)) +
+  geom_line(aes(y = TP)) +
   facet_wrap(~STATION_CODE) +
   scale_fill_discrete(name = "") +
   scale_y_continuous(expand = c(0,0)) +
@@ -290,6 +292,28 @@ sites %>%
        y = "Phosphorus (\U3BCM)")
 
 # phos mgL
+sites %>%
+  select(STATION_CODE, DATE, DIP, TP) %>%
+  filter(!(STATION_CODE == "gtmpcnut" & grepl("2020-06-02", DATE))) %>% # remove phos on 2020-06-02 due to QC
+  mutate(STATION_CODE = factor(STATION_CODE,
+                               levels = c("gtmpinut",
+                                          "gtmssnut",
+                                          "gtmfmnut",
+                                          "gtmpcnut"),
+                               labels = c("Pine Island",
+                                          "San Sebastian",
+                                          "Fort Matanzas",
+                                          "Pellicer Creek"))) %>% 
+  ggplot(aes(x = DATE, group = STATION_CODE)) +
+  geom_col(aes(y = DIP)) +
+  geom_point(aes(y = TP)) +
+  geom_line(aes(y = TP)) +
+  facet_wrap(~STATION_CODE) +
+  scale_fill_discrete(name = "") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic() +
+  labs(x = '',
+       y = "Phosphorus (mg/L)")
 
 # boxplots
 
