@@ -22,6 +22,7 @@ library(kableExtra) # https://cran.r-project.org/web/packages/kableExtra/vignett
 
 # 05 graphics ----
 library(cowplot) # additional themes for ggplot2
+library(khroma) # color-blind friendly palettes
 library(patchwork) # grid graphics
 library(scales) # scale functions for visualization
 library(plotly) # create interactive web graphics - use for html output files

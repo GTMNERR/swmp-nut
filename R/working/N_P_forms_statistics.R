@@ -85,6 +85,7 @@ rm(NH4, NO23, TKN, TKNF, TSS, CHLA, TP, DIP, SALT, DO)
 ## 03 calculate DIN, TN, DON, and PN ----
 # calculations of DIN, TN, DON, and PN
 
+# need to group by station and date and then take average due to replicates 1.1 and 1.2 values
 nitro1 <- nitro %>% 
             mutate(DATE = as.Date(DATE_TIME_STAMP)) %>% 
             group_by(STATION_CODE, DATE) %>% 
@@ -98,8 +99,8 @@ nitro1 <- nitro %>%
                    TNuM = TKNuM + NO23uM,
                    DONuM = TKNFuM - NH4uM,
                    PNuM = TNuM - (DINuM + DONuM)) %>% 
-  mutate_all(~ifelse(is.nan(.), NA, .)) %>% 
-  mutate(DATE = as.Date(DATE))
+  mutate_all(~ifelse(is.nan(.), NA, .)) %>% # remove all NaN and replace with NA 
+  mutate(DATE = as.Date(DATE)) # reformats the date data
 
 ## 04 site specific calculations ----
 # separate out sites to calculate multiple linear regression of PN as functions of TSS and CHLA
@@ -214,7 +215,7 @@ sites %>%
   ggplot(aes(x = DATE, y = conc, fill = nitro_source, group = STATION_CODE)) +
   geom_col() +
   facet_wrap(~STATION_CODE) +
-  scale_fill_discrete(name = "") +
+  scale_fill_okabeito(name = "") +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() +
   labs(x = '',
@@ -238,7 +239,7 @@ sites %>%
   ggplot(aes(x = DATE, y = conc, fill = nitro_source, group = STATION_CODE)) +
   geom_col() +
   facet_wrap(~STATION_CODE) +
-  scale_fill_discrete(name = "") +
+  scale_fill_okabeito(name = "") +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() +
   labs(x = '',
@@ -259,7 +260,6 @@ sites %>%
   ggplot(aes(x = DATE, y = CHLA_N)) +
   geom_col(fill = "forestgreen") +
   facet_wrap(~STATION_CODE) +
-  scale_fill_discrete(name = "") +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() +
   labs(x = '',
@@ -285,11 +285,11 @@ sites %>%
   geom_point(aes(y = TP)) +
   geom_line(aes(y = TP)) +
   facet_wrap(~STATION_CODE) +
-  scale_fill_discrete(name = "") +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() +
   labs(x = '',
-       y = "Phosphorus (\U3BCM)")
+       y = "Phosphorus (\U3BCM)",
+       caption = "Bars are DIP and points represent TP.")
 
 # phos mgL
 sites %>%
@@ -309,11 +309,11 @@ sites %>%
   geom_point(aes(y = TP)) +
   geom_line(aes(y = TP)) +
   facet_wrap(~STATION_CODE) +
-  scale_fill_discrete(name = "") +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() +
   labs(x = '',
-       y = "Phosphorus (mg/L)")
+       y = "Phosphorus (mg/L)",
+       caption = "Bars are DIP and points represent TP.")
 
 # boxplots
 
