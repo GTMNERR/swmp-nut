@@ -7,90 +7,51 @@
 ## 01.2 load 2021 WQ and MET files
 
 ## 01.1 load 2001-2020 WQ and MET files ------------------------------------------
-## import data with `SWMPr::import_local()` and then clean it with `SWMPr::qaqc()` to screen observations
-## check what the flags mean used in the `SWMPr::qaqc()` fxn here:  https://cdmo.baruch.sc.edu/data/qaqc.cfm.
-## add in station name (for combining)
-pi_hist <- SWMPr::import_local(path = here::here('data',
+### import data with `SWMPr::import_local()` and then clean it with `SWMPr::qaqc()` to screen observations
+### check what the flags mean used in the `SWMPr::qaqc()` fxn here:  https://cdmo.baruch.sc.edu/data/qaqc.cfm.
+### add in station name (for combining)
+pi <- SWMPr::import_local(path = here::here('data',
                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                station_code = 'gtmpiwq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) %>% 
-  dplyr::mutate(station = 'gtmpiwq')
-ss_hist <- SWMPr::import_local(path = here::here('data',
+  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) 
+ss <- SWMPr::import_local(path = here::here('data',
                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                station_code = 'gtmsswq') %>% 
   SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5'))
-fm_hist <- SWMPr::import_local(path = here::here('data',
+fm <- SWMPr::import_local(path = here::here('data',
                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                station_code = 'gtmfmwq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) %>% 
-  dplyr::mutate(station = 'gtmfmwq')
-pc_hist <- SWMPr::import_local(path = here::here('data',
+  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) 
+pc <- SWMPr::import_local(path = here::here('data',
                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                station_code = 'gtmpcwq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) %>% 
-  dplyr::mutate(station = 'gtmpcwq')
+  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) 
 
-WQ_hist <- dplyr::bind_rows(pi_hist, ss_hist, fm_hist, pc_hist)
-
-MET_hist <- SWMPr::import_local(path = here::here('data',
+MET <- SWMPr::import_local(path = here::here('data',
                                                   '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                 station_code = 'gtmpcmet') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) %>% 
-  dplyr::mutate(station = 'gtmpcmet')
-
-# choose to keep or remove individual stations
-rm(pi_hist, ss_hist, fm_hist, pc_hist)
-
-## 01.2 load 2021 WQ and MET files ------------------------------------------
-pi_2021 <- SWMPr::import_local(path = here::here('data',
-                                                 '2021',
-                                                 'WQ-MET'), 
-                               station_code = 'gtmpiwq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) %>% 
-  dplyr::mutate(station = 'gtmpiwq')
-ss_2021 <- SWMPr::import_local(path = here::here('data',
-                                                 '2021',
-                                                 'WQ-MET'), 
-                               station_code = 'gtmsswq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5'))
-fm_2021 <- SWMPr::import_local(path = here::here('data',
-                                                 '2021',
-                                                 'WQ-MET'), 
-                               station_code = 'gtmfmwq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) %>% 
-  dplyr::mutate(station = 'gtmfmwq')
-pc_2021 <- SWMPr::import_local(path = here::here('data',
-                                                 '2021',
-                                                 'WQ-MET'), 
-                               station_code = 'gtmpcwq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) %>% 
-  dplyr::mutate(station = 'gtmpcwq')
-
-WQ_2021 <- dplyr::bind_rows(pi_2021, ss_2021, fm_2021, pc_2021)
-
-MET_2021 <- SWMPr::import_local(path = here::here('data',
-                                                  '2021',
-                                                  'WQ-MET'), 
-                                station_code = 'gtmpcmet') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) %>% 
-  dplyr::mutate(station = 'gtmpcmet')
-
-# choose to keep or remove individual stations
-rm(pi_2021, ss_2021, fm_2021, pc_2021)
+  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) 
 
 # 02 wrangle data for merging ------------------------------------------------
 
-MET <- dplyr::bind_rows(MET_hist, MET_2021)
-WQ <- dplyr::bind_rows(WQ_hist, WQ_2021)
+# choose to add station name to the file for merging
+pi <- pi %>% dplyr::mutate(station = 'gtmpiwq')
+ss <- ss %>% dplyr::mutate(station = 'gtmsswq')
+fm <- fm %>% dplyr::mutate(station = 'gtmfmwq')
+pc <- pc %>% dplyr::mutate(station = 'gtmpcwq')
+
+# plus MET
+MET <- MET %>% dplyr::mutate(station = 'gtmpcmet')
+
+# combine all stations into one df (helpful to add station name)
+WQ <- dplyr::bind_rows(pi, ss, fm, pc)
+
+# choose to keep or remove individual stations
+# rm(pi, ss, fm, pc)
 
 
-# 03 export as .RData -----------------------------------------------------
+# 99 export as .RData -----------------------------------------------------
 
-## uncomment below to export nutrients as .RData for use later.
+## uncomment below to export as .RData for use later.
 # save(WQ, file = here::here('output', 'data', 'WQ.RData'))
 # save(MET, file = here::here('output', 'data', 'MET.RData'))
-
-rm(MET_2021, MET_hist, 
-   WQ_2021, WQ_hist)
-
-ss <- dplyr::bind_rows(ss_hist, ss_2021) %>% select(-station)
