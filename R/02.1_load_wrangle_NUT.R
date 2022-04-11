@@ -17,11 +17,12 @@ nms <- names(read_excel(here::here('data',
 class <- ifelse(grepl("^F_", nms), "text", "numeric") # read everything with F_ as a character
 class2 <- class[-(1:5)] # remove the first five elements of the vector because they are different
 
-nut <- readxl::read_xlsx(here::here('data',
+NUT <- readxl::read_xlsx(here::here('data',
                                          '2001_2020_WQ_MET_NUT_FilesCDMO',
                                          'All_inclusive_NUT',
                                          'gtmnut2002-2022_QC.xlsx'),
-                              col_types = c("text", "date", "numeric", "numeric", "text", class2))  # specify how to read in these columns
+                              col_types = c("text", "date", "numeric", "numeric", "text", class2)) %>% # specify how to read in these columns
+  janitor::clean_names(case = "screaming_snake")
             
   # clean environment
 rm(nms, class, class2)
