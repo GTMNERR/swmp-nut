@@ -161,7 +161,9 @@ seasonal_boxplot(pi, param = 'do_mgl') + labs(title = "Pine Island") + theme(leg
 ```
 
 ```{r pi-do-range, echo = FALSE}
-historical_daily_range(pi, param = 'do_mgl', target_yr = 2022, criteria = 2)
+pi %>% 
+  filter(do_mgl > 0) %>% 
+historical_daily_range(param = 'do_mgl', target_yr = 2022, criteria = 2)
 ```
 
 ### San Sebastian
@@ -397,10 +399,10 @@ pc_chla %>%
              shape = 1) +
   geom_point(data = filter(pc_chla, type == "Diel"),
              aes(x = datetimestamp, y = CHLA, color = "Diel"),
-             size = 3) +
+             size = 2) +
   geom_point(data = filter(pc_chla, type == "Grab"),
              aes(x = datetimestamp, y = CHLA, color = "Grab"),
-             size = 4) +
+             size = 2) +
   scale_colour_manual(name = '', 
                       values = c('Grab'='#0072B2', 
                                  'Diel'='#E69F00', 
