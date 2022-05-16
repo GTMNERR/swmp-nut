@@ -9,17 +9,17 @@ boxplot_currentyear <- function(station, param, threshold) {
   if (param == 0) {  
     boxplot <- ggplot(data = NUT_monthly, 
                       aes(x = MONTH_abb, y = CHLA_avg)) +
-      geom_boxplot(data = filter(NUT_monthly, STATION_CODE == station & YEAR < 2021), 
-                   aes(fill = "2002-2020")) +
-      geom_point(data = filter(NUT_monthly, STATION_CODE == station & YEAR == 2021), 
-                 aes(color = "2021"),
+      geom_boxplot(data = filter(NUT_monthly, STATION_CODE == station & YEAR < 2022), 
+                   aes(fill = "2002-2021")) +
+      geom_point(data = filter(NUT_monthly, STATION_CODE == station & YEAR == 2022), 
+                 aes(color = "2022"),
                  size = 4) +
       geom_hline(yintercept = threshold, color = "blue",
                  linetype = "dashed") +
       scale_color_manual(name = "", 
-                         values = c("2021" = "red")) +
+                         values = c("2022" = "red")) +
       scale_fill_manual(name = "",
-                        values = c("2002-2020" = "white")) +
+                        values = c("2002-2021" = "white")) +
       theme_classic() +
       theme(legend.position = "bottom",
             axis.text = element_text(color = "black")) +
@@ -29,17 +29,17 @@ boxplot_currentyear <- function(station, param, threshold) {
     
     boxplot <- ggplot(data = NUT_monthly, 
                       aes(x = MONTH_abb, y = TN_avg)) +
-      geom_boxplot(data = filter(NUT_monthly, STATION_CODE == station & YEAR < 2021), 
-                   aes(fill = "2002-2020")) +
-      geom_point(data = filter(NUT_monthly, STATION_CODE == station & YEAR == 2021), 
-                 aes(color = "2021"),
+      geom_boxplot(data = filter(NUT_monthly, STATION_CODE == station & YEAR < 2022), 
+                   aes(fill = "2002-2021")) +
+      geom_point(data = filter(NUT_monthly, STATION_CODE == station & YEAR == 2022), 
+                 aes(color = "2022"),
                  size = 4) +
       geom_hline(yintercept = threshold, color = "blue",
                  linetype = "dashed") +
       scale_color_manual(name = "", 
-                         values = c("2021" = "red")) +
+                         values = c("2022" = "red")) +
       scale_fill_manual(name = "",
-                        values = c("2002-2020" = "white")) +
+                        values = c("2002-2021" = "white")) +
       theme_classic() +
       theme(legend.position = "bottom",
             axis.text = element_text(color = "black")) +
@@ -49,17 +49,17 @@ boxplot_currentyear <- function(station, param, threshold) {
   } else {
     boxplot <- ggplot(data = NUT_monthly, 
                       aes(x = MONTH_abb, y = TP_avg)) +
-      geom_boxplot(data = filter(NUT_monthly, STATION_CODE == station & YEAR < 2021), 
-                   aes(fill = "2002-2020")) +
-      geom_point(data = filter(NUT_monthly, STATION_CODE == station & YEAR == 2021), 
-                 aes(color = "2021"),
+      geom_boxplot(data = filter(NUT_monthly, STATION_CODE == station & YEAR < 2022), 
+                   aes(fill = "2002-2021")) +
+      geom_point(data = filter(NUT_monthly, STATION_CODE == station & YEAR == 2022), 
+                 aes(color = "2022"),
                  size = 4) +
       geom_hline(yintercept = threshold, color = "blue",
                  linetype = "dashed") +
       scale_color_manual(name = "", 
-                         values = c("2021" = "red")) +
+                         values = c("2022" = "red")) +
       scale_fill_manual(name = "",
-                        values = c("2002-2020" = "white")) +
+                        values = c("2002-2021" = "white")) +
       theme_classic() +
       theme(legend.position = "bottom",
             axis.text = element_text(color = "black")) +

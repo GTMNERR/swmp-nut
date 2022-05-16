@@ -14,6 +14,7 @@ library(lubridate) # dates and times
 # 03 pulling information and statistics ----
 library(broom) # convert statistical analysis objects into tidy tibbles
 library(psych)
+library(wql)
 
 # 04 markdown ----
 library(knitr)

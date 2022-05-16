@@ -115,8 +115,8 @@ broom::tidy(pi_fit)
 broom::glance(pi_fit)
 
 pi <- pi %>% 
-  mutate(N_sed = 0.191*TSS,
-         N_phyto = 0.285*CHLA_N)
+  mutate(N_sed = 0.192*TSS, # get the number from the estimate in lm for TSS
+         N_phyto = 0.280*CHLA_N) # get the number from the estimate in lm for CHLA
 
 # san sebastian
 ss <- nitro1 %>% filter(STATION_CODE == "gtmssnut" & PNuM > 0)
@@ -126,8 +126,8 @@ summary(ss_fit)
 broom::tidy(ss_fit)
 
 ss <- ss %>% 
-  mutate(N_sed = 0.272*TSS,
-         N_phyto = 0.329*CHLA_N)
+  mutate(N_sed = 0.276*TSS,
+         N_phyto = 0.315*CHLA_N)
 
 # fort matanzas
 fm <- nitro1 %>% filter(STATION_CODE == "gtmfmnut" & PNuM > 0)
@@ -137,8 +137,8 @@ summary(fm_fit)
 broom::tidy(fm_fit)
 
 fm <- fm %>% 
-  mutate(N_sed = 0.293*TSS,
-         N_phyto = 0.479*CHLA_N)
+  mutate(N_sed = 0.23*TSS,
+         N_phyto = 0.499*CHLA_N)
          
 
 # pellicer creek
@@ -149,18 +149,24 @@ summary(pc_fit)
 broom::tidy(pc_fit)
 
 pc <- pc %>% 
-  mutate(N_sed = 0.358*TSS,
-         N_phyto = 0.361*CHLA_N)
+  mutate(N_sed = 0.354*TSS,
+         N_phyto = 0.370*CHLA_N)
 
 
 # merge all sites back into one dataframe
 sites <- bind_rows(pi, ss, fm, pc) %>% 
           mutate(N_limit = 100*(DINuM/(DINuM + 1.6)),
-                 P_limit = 100*(DIPuM/(DIPuM +0.24)),
+                 P_limit = 100*(DIPuM/(DIPuM + 0.24)),
+                 TN_TP = TN/TP,
                  TN_TPuM = TNuM/TPuM,
                  DIN_DIPuM = DINuM/DIPuM,
+                 DIN_DIP = DIN/DIP,
                  N_sed_mg = N_sed * 14.01/1000,
-                 N_phyto_mg = N_phyto * 14.01/1000)
+                 N_phyto_mg = N_phyto * 14.01/1000, 
+                 N_eff = CHLA_N/DIN,
+                 N_effuM = CHLA_N/DINuM,
+                 P_eff = CHLA_N/DIP,
+                 P_effuM = CHLA_N/DIPuM)
 
 # clean-up environment
 rm(pi, pi_fit, ss, ss_fit, fm, fm_fit, pc, pc_fit)
@@ -187,7 +193,8 @@ all <- sites_calc %>%
          Phosphorus_effuM = CHLA_N_mean/DIPuM_mean)
 
 ## 06 export file ----
-write.xlsx(all, here::here("output", "data", "N_and_P_statistics.xlsx"))
+## uncomment to export file
+# write.xlsx(all, here::here("output", "data", "N_and_P_statistics.xlsx"))
 
 ## 07 plots ----
 
@@ -240,7 +247,7 @@ sites %>%
   geom_col() +
   facet_wrap(~STATION_CODE) +
   scale_fill_okabeito(name = "") +
-  scale_y_continuous(expand = c(0,0)) +
+  scale_y_continuous(labels = scales::label_percent(), expand = c(0,0)) +
   theme_classic() +
   labs(x = '',
        y = "Nitrogen (mg/L)")
@@ -315,6 +322,86 @@ sites %>%
        y = "Phosphorus (mg/L)",
        caption = "Bars are DIP and points represent TP.")
 
+# redfield ratios
+sites %>% 
+  select(STATION_CODE, DATE, TN_TP, DIN_DIP) %>% 
+  mutate(STATION_CODE = factor(STATION_CODE,
+                               levels = c("gtmpinut",
+                                          "gtmssnut",
+                                          "gtmfmnut",
+                                          "gtmpcnut"),
+                               labels = c("PI",
+                                          "SS",
+                                          "FM",
+                                          "PC"))) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = STATION_CODE, y = TN_TP, fill = STATION_CODE)) +
+  geom_hline(yintercept = 7.2) + 
+  scale_fill_manual(values = c("PI" = "#0072B2",
+                               "SS" = "#CC7987",
+                               "FM" = "#009E73",
+                               "PC" = "#E69F00")) +
+  theme_classic() +
+  theme(legend.position = "none",
+        axis.text = element_text(color = "black", size= 18),
+        axis.title.y = element_text(color = "black", size = 20)) +
+  labs(x = '',
+       y = "TN:TP")
+
+sites %>% 
+  select(STATION_CODE, DATE, TN_TP, DIN_DIP) %>% 
+  mutate(STATION_CODE = factor(STATION_CODE,
+                               levels = c("gtmpinut",
+                                          "gtmssnut",
+                                          "gtmfmnut",
+                                          "gtmpcnut"),
+                               labels = c("PI",
+                                          "SS",
+                                          "FM",
+                                          "PC"))) %>% 
+  ggplot() +
+  geom_point(aes(x = DATE, y = TN_TP, color = STATION_CODE), size = 3) +
+  geom_hline(yintercept = 7.2) + 
+  scale_color_manual(name = "Site", 
+                     values = c("PI" = "#0072B2",
+                               "SS" = "#CC7987",
+                               "FM" = "#009E73",
+                               "PC" = "#E69F00")) +
+  theme_classic() +
+  theme(axis.text = element_text(color = "black", size= 18),
+        axis.title.y = element_text(color = "black", size = 20),
+        legend.title = element_text(color = "black", size = 18),
+        legend.text = element_text(color = "black", size = 18)) +
+  labs(x = '',
+       y = "TN:TP")
+
+sites %>%
+  select(STATION_CODE, DATE, TN, TP) %>%
+  mutate(STATION_CODE = factor(STATION_CODE,
+                               levels = c("gtmpinut",
+                                          "gtmssnut",
+                                          "gtmfmnut",
+                                          "gtmpcnut"),
+                               labels = c("PI",
+                                          "SS",
+                                          "FM",
+                                          "PC"))) %>%
+  ggplot() +
+  geom_point(aes(x = TP, y = TN, color = STATION_CODE), color = "white", size = 3) +
+  geom_abline(slope = 7.23, size = 0.5) +
+  scale_color_manual(name = "Site",
+                     values = c("PI" = "#0072B2",
+                                "SS" = "#CC7987",
+                                "FM" = "#009E73",
+                                "PC" = "#E69F00")) +
+  theme_classic() +
+  theme(axis.text = element_text(color = "white"),
+        axis.title.y = element_text(color = "black", size = 20),
+        axis.title.x = element_text(color = "black", size = 20),
+        legend.title = element_text(color = "black", size = 18),
+        legend.text = element_text(color = "black", size = 18)) +
+  labs(x = 'Total Phosphorus (mg/L)',
+       y = "Total Nitrogen (mg/L)")
 # boxplots
 
 # boxplot <- function(x) {

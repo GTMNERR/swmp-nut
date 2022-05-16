@@ -55,3 +55,7 @@ WQ <- dplyr::bind_rows(pi, ss, fm, pc)
 ## uncomment below to export as .RData for use later.
 # save(WQ, file = here::here('output', 'data', 'WQ.RData'))
 # save(MET, file = here::here('output', 'data', 'MET.RData'))
+# save(pi, file = here::here('output', 'data', 'pi_wq.RData'))
+# save(ss, file = here::here('output', 'data', 'ss_wq.RData'))
+# save(fm, file = here::here('output', 'data', 'fm_wq.RData'))
+# save(pc, file = here::here('output', 'data', 'pc_wq.RData'))

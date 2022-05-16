@@ -1,6 +1,6 @@
 # owqtf plots
 # first load packages
-# source(here::here('R', '00_loadpackages.R'))
+source(here::here('R', '00_loadpackages.R'))
 # load data
 load(here::here('output', 'data', 'NUT.RData'))
 # check it
@@ -240,7 +240,57 @@ agm <- function(station, param, threshold) {
   }
 }
 
-# a <- agm(station = "gtmpcnut", 
-#     param = 0, 
+# a <- agm(station = "gtmpcnut",
+#     param = 0,
 #     intercept = 4.3)
 # a
+
+## 04.3 Static Boxplots ----
+
+# CHLA
+## PI
+boxplot_currentyear(station = "gtmpinut", 
+                    param = 1, 
+                    threshold = 0.65) +
+  labs(title = "Pine Island") +
+  annotate("text",
+           x = "Mar",
+           y = 1.2,
+           size = 3,
+           color = "blue",
+           label = "State Threshold 0.65 (mg/L)")
+## SS
+SS <- agm(station = "gtmssnut", 
+          param = 0, 
+          threshold = 4.0) +
+  labs(title = "San Sebastian") +
+  annotate("text",
+           x = "2006",
+           y = 6,
+           size = 3,
+           color = "blue",
+           label = "State Threshold 4.0 (\U00B5g/L)")
+## FM
+boxplot_currentyear(station = "gtmfmnut", 
+                    param = 0, 
+                    threshold = 5.5) +
+  labs(title = "Fort Matanzas") +
+  annotate("text",
+           x = "Mar",
+           y = 24,
+           size = 3,
+           color = "blue",
+           label = "State Threshold 5.5 (\U00B5g/L)")
+## PC
+PC <- agm(station = "gtmpcnut", 
+          param = 0, 
+          threshold = 4.3) +
+  labs(title = "Pellicer Creek") +
+  annotate("text",
+           x = "2006",
+           y = 16,
+           size = 3,
+           color = "blue",
+           label = "State Threshold 4.3 (\U00B5g/L)")
+
+SS + (PC + labs(y = ""))
