@@ -1,0 +1,48 @@
+---
+title: "May 2022 Nor'easter at Pellicer Creek"
+author: "S Dunnigan and K Petrinec"
+date: "5/16/2022"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(dpi = 120)
+source(here::here('R', '00_loadpackages.R'))
+```
+
+```{r load-data-01, include = FALSE}
+source(here::here('R', '02.1_load_wrangle_NUT.R'))
+load(here::here('output', 'data', 'WQ.RData'))
+load(here::here('output', 'data', 'MET.RData'))
+load(here::here('output', 'data', 'pi_wq.RData'))
+load(here::here('output', 'data', 'ss_wq.RData'))
+load(here::here('output', 'data', 'fm_wq.RData'))
+load(here::here('output', 'data', 'pc_wq.RData'))
+
+# load graphing functions
+source(here::here('R', '03_graph_fxns.R'))
+
+# run source code below if data has not been updated in the saved RData files
+
+# source(here::here('R', '02.2_load_wrangle_WQ-and-MET.R'))
+
+```
+
+```{r wrangle, include = FALSE}
+nr_pc <- pc %>% 
+          filter(datetimestamp > "2022-04-30 00:00:00")
+  
+
+```
+
+# Current year salinity
+
+```{r pc-sal-range, echo = FALSE}
+pc %>%
+  historical_daily_range(param = 'sal', target_yr = 2022)
+```
