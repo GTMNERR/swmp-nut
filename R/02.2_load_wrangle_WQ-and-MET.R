@@ -13,24 +13,24 @@
 pi <- SWMPr::import_local(path = here::here('data',
                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                station_code = 'gtmpiwq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) 
+  SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5')) 
 ss <- SWMPr::import_local(path = here::here('data',
                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                station_code = 'gtmsswq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5'))
+  SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5'))
 fm <- SWMPr::import_local(path = here::here('data',
                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                station_code = 'gtmfmwq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) 
+  SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5')) 
 pc <- SWMPr::import_local(path = here::here('data',
                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                station_code = 'gtmpcwq') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) 
+  SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5')) 
 
 MET <- SWMPr::import_local(path = here::here('data',
                                                   '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                 station_code = 'gtmpcmet') %>% 
-  SWMPr::qaqc(qaqc_keep = c('0', '1', '2', '3', '4', '5')) 
+  SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5')) 
 
 # 02 wrangle data for merging ------------------------------------------------
 
