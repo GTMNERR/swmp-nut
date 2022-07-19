@@ -23,56 +23,72 @@ knitr::opts_chunk$set(dpi = 120)
 source(here::here('R', '00_loadpackages.R'))
 ```
 
-```{r map, include = FALSE, eval = FALSE}
-# I want to make an interactive reserve map here with leaflet
-# here's a resource I want to use https://towardsdatascience.com/making-interactive-maps-in-r-with-less-than-15-lines-of-code-bfd81f587e12
-# picking different map styles: https://leaflet-extras.github.io/leaflet-providers/preview/
-```
-
 ```{r load-data-01, include = FALSE}
 source(here::here('R', '02.1_load_wrangle_NUT.R'))
-load(here::here('output', 'data', 'WQ.RData'))
-load(here::here('output', 'data', 'MET.RData'))
-load(here::here('output', 'data', 'pi_wq.RData'))
-load(here::here('output', 'data', 'ss_wq.RData'))
-load(here::here('output', 'data', 'fm_wq.RData'))
-load(here::here('output', 'data', 'pc_wq.RData'))
+# load(here::here('output', 'data', 'WQ.RData'))
+# load(here::here('output', 'data', 'MET.RData'))
+# load(here::here('output', 'data', 'pi_wq.RData'))
+# load(here::here('output', 'data', 'ss_wq.RData'))
+# load(here::here('output', 'data', 'fm_wq.RData'))
+# load(here::here('output', 'data', 'pc_wq.RData'))
 
 # load graphing functions
 source(here::here('R', '03_graph_fxns.R'))
 
 # run source code below if data has not been updated in the saved RData files
 
-# source(here::here('R', '02.2_load_wrangle_WQ-and-MET.R'))
+source(here::here('R', '02.2_load_wrangle_WQ-and-MET.R'))
 
+# for the map
+source(here::here('R', '04_map.R'))
+
+```
+
+# GTM Research Reserve Long-term Stations
+
+```{r map, echo = FALSE}
+# I want to make an interactive reserve map here with leaflet
+# here's a resource I want to use https://towardsdatascience.com/making-interactive-maps-in-r-with-less-than-15-lines-of-code-bfd81f587e12
+# picking different map styles: https://leaflet-extras.github.io/leaflet-providers/preview/
+
+spatial %>%
+  leaflet(width = 900) %>%
+  addTiles() %>%
+  addMarkers(clusterOptions = markerClusterOptions(),
+             label = ~htmlEscape(station_code),
+             labelOptions = labelOptions(textsize = "15px")) %>%
+  addPolygons(data = shape_data, weight = 5, col = 'red')
 ```
 
 # Environmental
 
 ## Rainfall
 
-```{r met-rainfall-stack, echo = FALSE}
+```{r met-rainfall-stack, echo = FALSE, caption = "Ongoing seasonal totals of precipitation at the Pellicer Creek weather station. Winter includes December, January, and February; Spring includes March, April, and May; Summer includes June, July, and August; and Fall includes September, October, and November."}
 MET %>% 
-  mutate(totprcp = totprcp * 0.0393701) %>%
+  # mutate(totprcp = totprcp * 0.0393701) %>%
   SWMPrExtension::seasonal_barplot(param = 'totprcp',
                                    season_grps = list(c(12,1,2), c(3,4,5), c(6,7,8), c(9, 10, 11)),
                                    season_names = c('Winter', 'Spring', 'Summer', 'Fall'),
                                    hist_avg = TRUE,
-                                   converted = TRUE) + 
+                                   converted = FALSE) + 
   theme(axis.text.x = element_text(angle = 45,
                                    vjust = 0.6),
         axis.text = element_text(color = "black", size = 18),
         axis.title.y = element_text(size = 20))
 ```
 
-```{r met-rainfall-wuarter-stack, echo = FALSE}
+```{r met-rainfall-quarter-stack, echo = FALSE, caption = "Ongoing quarterly totals of precipitation at the Pellicer Creek weather station. Quarter 1 (Q1) includes January-March; Quarter 2 (Q2) includes April-June; Quarter 3 (Q3) includes July-September; Quarter 4 (Q4) includes October-December."}
 MET %>% 
-  mutate(totprcp = totprcp * 0.0393701) %>%
+  # mutate(totprcp = totprcp * 0.0393701) %>%
   SWMPrExtension::seasonal_barplot(param = 'totprcp',
-                                   season_grps = list(c(1,2,3), c(4,5,6), c(7,8,9), c(10, 11, 12)),
+                                   season_grps = list(c(1,2,3), 
+                                                      c(4,5,6), 
+                                                      c(7,8,9), 
+                                                      c(10, 11, 12)),
                                    season_names = c('Q1', 'Q2', 'Q3', 'Q4'),
                                    hist_avg = TRUE,
-                                   converted = TRUE) + 
+                                   converted = F) + 
   theme(axis.text.x = element_text(angle = 45,
                                    vjust = 0.6),
         axis.text = element_text(color = "black", size = 18),
@@ -99,6 +115,48 @@ MET %>%
        y = 'Total Precipitation (in)',
        title = "Current year monthly totals",
        caption = "Hortizontal line represents current year monthly average.")
+```
+
+## Temperature {.tabset .tabset-pills}
+
+### Pine Island
+
+```{r pi-temp-annual-boxplot, echo = FALSE}
+seasonal_boxplot(pi, param = 'temp') + labs(title = "Pine Island") + theme(legend.position = "none")
+```
+
+```{r pi-temp-range, echo = FALSE}
+historical_daily_range(pi, param = 'temp', target_yr = 2022)
+```
+
+### San Sebastian
+
+```{r ss-temp-annual-boxplot, echo = FALSE}
+seasonal_boxplot(ss, param = 'temp') + labs(title = "San Sebastian") + theme(legend.position = "none")
+```
+
+```{r ss-temp-range, echo = FALSE}
+historical_daily_range(ss, param = 'temp', target_yr = 2022)
+```
+
+### Fort Matanzas
+
+```{r fm-temp-annual-boxplot, echo = FALSE}
+seasonal_boxplot(fm, param = 'temp') + labs(title = "Fort Matanzas") + theme(legend.position = "none")
+```
+
+```{r fm-temp-range, echo = FALSE}
+historical_daily_range(fm, param = 'temp', target_yr = 2022)
+```
+
+### Pellicer Creek
+
+```{r pc-temp-annual-boxplot, echo = FALSE}
+seasonal_boxplot(pc, param = 'temp') + labs(title = "Pellicer Creek") + theme(legend.position = "none")
+```
+
+```{r pc-temp-range, echo = FALSE}
+historical_daily_range(pc, param = 'temp', target_yr = 2022)
 ```
 
 ## Salinity {.tabset .tabset-pills}
