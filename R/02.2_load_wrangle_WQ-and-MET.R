@@ -28,26 +28,26 @@ pc <- SWMPr::import_local(path = here::here('data',
   SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5')) 
 
 MET <- SWMPr::import_local(path = here::here('data',
-                                                  '2001_2020_WQ_MET_NUT_FilesCDMO'), 
+                                             '2001_2020_WQ_MET_NUT_FilesCDMO'), 
                                 station_code = 'gtmpcmet') %>% 
   SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5')) 
 
 # 02 wrangle data for merging ------------------------------------------------
 
 # choose to add station name to the file for merging
-pi <- pi %>% dplyr::mutate(station = 'gtmpiwq')
-ss <- ss %>% dplyr::mutate(station = 'gtmsswq')
-fm <- fm %>% dplyr::mutate(station = 'gtmfmwq')
-pc <- pc %>% dplyr::mutate(station = 'gtmpcwq')
+pi2 <- pi %>% dplyr::mutate(station = 'gtmpiwq')
+ss2 <- ss %>% dplyr::mutate(station = 'gtmsswq')
+fm2 <- fm %>% dplyr::mutate(station = 'gtmfmwq')
+pc2 <- pc %>% dplyr::mutate(station = 'gtmpcwq')
 
 # plus MET
-MET <- MET %>% dplyr::mutate(station = 'gtmpcmet')
+# MET <- MET %>% dplyr::mutate(station = 'gtmpcmet')
 
 # combine all stations into one df (helpful to add station name)
-WQ <- dplyr::bind_rows(pi, ss, fm, pc)
+WQ <- dplyr::bind_rows(pi2, ss2, fm2, pc2)
 
 # choose to keep or remove individual stations
-# rm(pi, ss, fm, pc)
+rm(pi2, ss2, fm2, pc2)
 
 
 # 99 export as .RData -----------------------------------------------------
