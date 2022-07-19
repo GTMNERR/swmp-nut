@@ -1,5 +1,5 @@
 # load libraries and data files 
-# updated 2022-04-08 SKD to add 2022 data
+# updated 2022-07-19 SKD to convert to swmpr object and filter using qaqc
 # uncomment below if necessary
 # source('R/00_loadpackages.R')
 
