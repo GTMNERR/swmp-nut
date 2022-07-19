@@ -34,3 +34,9 @@ library(ggcorrplot) # visualization of correlation matrix using ggplot2
 # Install
 # if(!require(devtools)) install.packages("devtools")
 # devtools::install_github("kassambara/ggcorrplot")
+
+# 06 mapping ---------------------------------------------------------------
+library(leaflet)
+library(htmltools)
+library(sf)
+
