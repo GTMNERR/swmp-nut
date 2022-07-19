@@ -1,5 +1,5 @@
 # load libraries and data files 
-# updated 2022-07-19 SKD to convert to swmpr object and filter using qaqc
+# updated 2022-07-19 SKD to convert to swmpr object and filter using qaqc from swmpr
 # uncomment below if necessary
 # source('R/00_loadpackages.R')
 
