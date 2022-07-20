@@ -8,10 +8,10 @@ boxplot_currentyear <- function(station, param, threshold) {
   
   if (param == 0) {  
     boxplot <- ggplot(data = NUT_monthly, 
-                      aes(x = MONTH_abb, y = CHLA_avg)) +
-      geom_boxplot(data = filter(NUT_monthly, STATION_CODE == station & YEAR < 2022), 
+                      aes(x = month_abb, y = chla_n)) +
+      geom_boxplot(data = filter(NUT_monthly, station_code == station & year < 2022), 
                    aes(fill = "2002-2021")) +
-      geom_point(data = filter(NUT_monthly, STATION_CODE == station & YEAR == 2022), 
+      geom_point(data = filter(NUT_monthly, station_code == station & year == 2022), 
                  aes(color = "2022"),
                  size = 4) +
       geom_hline(yintercept = threshold, color = "blue",
@@ -28,10 +28,10 @@ boxplot_currentyear <- function(station, param, threshold) {
   } else if (param == 1) {
     
     boxplot <- ggplot(data = NUT_monthly, 
-                      aes(x = MONTH_abb, y = TN_avg)) +
-      geom_boxplot(data = filter(NUT_monthly, STATION_CODE == station & YEAR < 2022), 
+                      aes(x = month_abb, y = tn)) +
+      geom_boxplot(data = filter(NUT_monthly, station_code == station & year < 2022), 
                    aes(fill = "2002-2021")) +
-      geom_point(data = filter(NUT_monthly, STATION_CODE == station & YEAR == 2022), 
+      geom_point(data = filter(NUT_monthly, station_code == station & year == 2022), 
                  aes(color = "2022"),
                  size = 4) +
       geom_hline(yintercept = threshold, color = "blue",
@@ -48,10 +48,10 @@ boxplot_currentyear <- function(station, param, threshold) {
     
   } else {
     boxplot <- ggplot(data = NUT_monthly, 
-                      aes(x = MONTH_abb, y = TP_avg)) +
-      geom_boxplot(data = filter(NUT_monthly, STATION_CODE == station & YEAR < 2022), 
+                      aes(x = month_abb, y = tp)) +
+      geom_boxplot(data = filter(NUT_monthly, station_code == station & year < 2022), 
                    aes(fill = "2002-2021")) +
-      geom_point(data = filter(NUT_monthly, STATION_CODE == station & YEAR == 2022), 
+      geom_point(data = filter(NUT_monthly, station_code == station & year == 2022), 
                  aes(color = "2022"),
                  size = 4) +
       geom_hline(yintercept = threshold, color = "blue",
@@ -79,7 +79,7 @@ boxplot_currentyear <- function(station, param, threshold) {
 #            color = "blue",
 #            label = "State Threshold 4.3 (\U00B5g/L)")
 # )
-# 
+
 # boxplot_currentyear(station = "gtmpcnut", param = 0, threshold = 4.3) +
 #   labs(x = "",
 #        y = "Mean Monthly Chlorophyll-a (\U00B5g/L)",
