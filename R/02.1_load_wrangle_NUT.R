@@ -97,6 +97,7 @@ rm(PC_nut)
 # class(swmp_pc)
 # str(swmp_pc)
 
+rm(timezone)
 
 ## 04.2 qaqc swmpr --------------------------------------------------------
 
@@ -109,77 +110,27 @@ pc_nut <- swmp_pc %>% SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5'))
 
 rm(swmp_pi, swmp_ss, swmp_fm,swmp_pc)
 
-# 05 wrangle for nutrient indicators --------------------------------------
 
-## 05.1 parameters of interest (OLD)----
+# 05 aggregate to monthly -------------------------------------------------
 
-TN_f <- NUT %>% 
-  dplyr::select(1:4, TN, F_TN) %>% 
-  dplyr::filter(grepl("0|<1>|<2>|<3>|<4>|<-4>|<5>", F_TN) | is.na(F_TN)) %>%
-  dplyr::select(-F_TN) %>% 
-  dplyr::filter(MONITORING_PROGRAM == 1) %>% 
-  dplyr::mutate(DATE = as.Date(DATE_TIME_STAMP)) %>% 
-  dplyr::select(STATION_CODE, DATE, REP, TN) 
+pi_nut_mo <- pi_nut %>% aggreswmp(by = "months")
+ss_nut_mo <- ss_nut %>% aggreswmp(by = "months")
+fm_nut_mo <- fm_nut %>% aggreswmp(by = "months")
+pc_nut_mo <- pc_nut %>% aggreswmp(by = "months")
 
-TP_f <- NUT %>% 
-  dplyr::select(1:4, TP, F_TP) %>%
-  dplyr::filter(grepl("0|<1>|<2>|<3>|<4>|<-4>|<5>", F_TP) | is.na(F_TP)) %>% 
-  dplyr::select(-F_TP) %>% 
-  dplyr::filter(MONITORING_PROGRAM == 1) %>% 
-  dplyr::mutate(DATE = as.Date(DATE_TIME_STAMP)) %>% 
-  dplyr::select(-MONITORING_PROGRAM, -DATE_TIME_STAMP)     
+# merge together
+NUT_f <- bind_rows("gtmpinut" = pi_nut_mo, 
+                   "gtmssnut" = ss_nut_mo, 
+                   "gtmfmnut" = fm_nut_mo, 
+                   "gtmpcnut" = pc_nut_mo, 
+                   .id = "station_code")
 
-CHLA_f <- NUT %>% 
-  dplyr::select(1:4, CHLA_N, F_CHLA_N) %>% 
-  dplyr::filter(grepl("0|<1>|<2>|<3>|<4>|<-4>|<5>", F_CHLA_N) | is.na(F_CHLA_N)) %>% 
-  dplyr::select(-F_CHLA_N) %>% 
-  dplyr::filter(MONITORING_PROGRAM == 1) %>% 
-  dplyr::mutate(DATE = as.Date(DATE_TIME_STAMP)) %>% 
-  dplyr::select(-MONITORING_PROGRAM, -DATE_TIME_STAMP) 
-
-ENTERO_f <- NUT %>% 
-  dplyr::select(1:4, ENTERO_MPN, F_ENTERO_MPN) %>% 
-  dplyr::filter(grepl("0|<1>|<2>|<3>|<4>|<-4>|<5>", F_ENTERO_MPN) | is.na(F_ENTERO_MPN)) %>% 
-  dplyr::select(-F_ENTERO_MPN) %>% 
-  dplyr::filter(MONITORING_PROGRAM == 1) %>% 
-  dplyr::mutate(DATE = as.Date(DATE_TIME_STAMP)) %>% 
-  dplyr::select(-MONITORING_PROGRAM, -DATE_TIME_STAMP) 
-
-FECAL_f <- NUT %>% 
-  dplyr::select(1:4, FECCOL_CFU, F_FECCOL_CFU) %>% 
-  dplyr::filter(grepl("0|<1>|<2>|<3>|<4>|<-4>|<5>", F_FECCOL_CFU) | is.na(F_FECCOL_CFU)) %>% 
-  dplyr::select(-F_FECCOL_CFU) %>% 
-  dplyr::filter(MONITORING_PROGRAM == 1) %>% 
-  dplyr::mutate(DATE = as.Date(DATE_TIME_STAMP)) %>% 
-  dplyr::select(-MONITORING_PROGRAM, -DATE_TIME_STAMP) 
-
-
-## 05.2 merge all parameters into one new df --------------------------------
-
-NUT_f <- dplyr::left_join(TN_f, TP_f, by = c("STATION_CODE", "DATE", "REP")) %>% 
-  dplyr::left_join(CHLA_f, by = c("STATION_CODE", "DATE", "REP")) %>% 
-  dplyr::left_join(ENTERO_f, by = c("STATION_CODE", "DATE", "REP")) %>% 
-  dplyr::left_join(FECAL_f, by = c("STATION_CODE", "DATE", "REP"))
-
-# clean environment
-rm(CHLA_f, TN_f, TP_f, ENTERO_f, FECAL_f)
-
-
-## 05.3 calculations --------------------------------------------------------------
-
-### 05.3.1 monthly average ----
-NUT_monthly <- NUT_f %>% 
-  dplyr::group_by(STATION_CODE, DATE) %>% 
-  dplyr::summarise(TN_avg = mean(TN, na.rm = TRUE),
-                   TP_avg = mean(TP, na.rm = TRUE),
-                   CHLA_avg = mean(CHLA_N, na.rm = TRUE),
-                   ENTERO_avg = mean(ENTERO_MPN, na.rm = TRUE),
-                   FECAL_avg = mean(FECCOL_CFU, na.rm = TRUE),
-                   .groups = "keep") %>% 
-  dplyr::mutate(YEAR = lubridate::year(DATE), 
-                MONTH_abb = lubridate::month(DATE, label = TRUE, abbr = TRUE),
-                MONTH = lubridate::month(DATE),
-                STATION_CODE = factor(STATION_CODE,
+NUT_monthly <- NUT_f %>%
+  select(station_code, datetimestamp, tn, tp, chla_n) %>% 
+  dplyr::mutate(year = lubridate::year(datetimestamp), 
+                month_abb = lubridate::month(datetimestamp, label = TRUE, abbr = TRUE),
+                month = lubridate::month(datetimestamp),
+                station_code = factor(station_code,
                                       levels = c("gtmpinut",
                                                  "gtmssnut",
                                                  "gtmfmnut",
@@ -191,14 +142,9 @@ NUT_monthly <- NUT_f %>%
 # or use the psych::geometric.mean() function
 
 NUT_yearly <- NUT_monthly %>% 
-  dplyr::group_by(STATION_CODE, YEAR) %>% 
-  dplyr::summarise(TN_agm = psych::geometric.mean(TN_avg, na.rm = T),
-                   TP_agm = psych::geometric.mean(TP_avg, na.rm = T),
-                   CHLA_agm = psych::geometric.mean(CHLA_avg, na.rm = T)) %>% 
+  dplyr::group_by(station_code, year) %>% 
+  dplyr::summarise(TN_agm = psych::geometric.mean(tn, na.rm = T),
+                   TP_agm = psych::geometric.mean(tp, na.rm = T),
+                   CHLA_agm = psych::geometric.mean(chla_n, na.rm = T)) %>% 
   dplyr::ungroup() %>% 
-  dplyr::mutate(YEAR = forcats::as_factor(YEAR))
-
-
-## 99 export .RData ----
-## uncomment below to export nutrients as .RData for use later.
-# save(NUT, file = here::here('output', 'data', 'NUT.RData'))
+  dplyr::mutate(year = forcats::as_factor(year))
