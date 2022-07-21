@@ -15,6 +15,7 @@ library(lubridate) # dates and times
 library(broom) # convert statistical analysis objects into tidy tibbles
 library(psych)
 library(wql)
+library(car) # expanded statistical tests
 
 # 04 markdown ----
 library(knitr)
@@ -23,6 +24,7 @@ library(kableExtra) # https://cran.r-project.org/web/packages/kableExtra/vignett
 
 # 05 graphics ----
 library(cowplot) # additional themes for ggplot2
+library(ggpubr) # stats and additional plotting
 library(khroma) # color-blind friendly palettes
 library(patchwork) # grid graphics
 library(scales) # scale functions for visualization
