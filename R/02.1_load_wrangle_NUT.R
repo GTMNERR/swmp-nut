@@ -37,78 +37,50 @@ NUT <- NUT %>% filter(!is.na(rep)) # remove "S" reps in dataset
 # The `swmpr()` call needs to have just datetimestamp and data+qa columns, so remove the extras, while also making names lower case.
 timezone <- "America/Jamaica" # needs a timezone
 
-# Pine Island
-PI_nut <- NUT %>%
-  filter(station_code == "gtmpinut") %>%
-  select(-station_code) %>%
-  mutate(date_time_stamp = as.POSIXct(date_time_stamp,
-                                      tz = timezone,
-                                      format = '%m/%d/%Y %H:%M')) %>%
-  rename(datetimestamp = date_time_stamp) %>% 
-  select(-monitoring_program, -rep)
+stations <- c("gtmpinut", "gtmssnut", "gtmfmnut", "gtmpcnut")
 
-# swmpr wants data frame, not tibble
-swmp_pi <- swmpr(as.data.frame(PI_nut), "gtmpinut")
-rm(PI_nut)
+for (i in 1:length(stations)){
+  
+  tempdf <- swmpr(as.data.frame(NUT %>%
+                                  filter(station_code == stations[i]) %>%
+                                  select(-station_code) %>%
+                                  mutate(date_time_stamp = as.POSIXct(date_time_stamp,
+                                                                      tz = timezone,
+                                                                      format = '%m/%d/%Y %H:%M')) %>%
+                                  rename(datetimestamp = date_time_stamp,
+                                         unc_chla_n = unc_ch_la_n,
+                                         f_unc_chla_n = f_unc_ch_la_n) %>%
+                                  filter(monitoring_program == 1) %>%
+                                  select(-monitoring_program, -rep)), 
+                  stations[i])
+  
+  # 
+  name <- attr(tempdf, "station") # pull out the name you want of the file
+  # 
+  assign(paste0("swmp", "_", name), tempdf)
+  
+  rm(tempdf, name, i)
+}
 
-# San Sebastian
-SS_nut <- NUT %>%
-  filter(station_code == "gtmssnut") %>%
-  select(-station_code) %>%
-  mutate(date_time_stamp = as.POSIXct(date_time_stamp,
-                                      tz = timezone,
-                                      format = '%m/%d/%Y %H:%M')) %>%
-  rename(datetimestamp = date_time_stamp) %>% 
-  select(-monitoring_program, -rep)
+# check object(s) to confirm they are swmpr objects
+# class(swmp_gtmpcnut)
+# str(swmp_gtmpcnut)
 
-# swmpr wants data frame, not tibble
-swmp_ss <- swmpr(as.data.frame(SS_nut), "gtmssnut")
-rm(SS_nut)
-
-# Fort Matanzas
-FM_nut <- NUT %>%
-  filter(station_code == "gtmfmnut") %>%
-  select(-station_code) %>%
-  mutate(date_time_stamp = as.POSIXct(date_time_stamp,
-                                      tz = timezone,
-                                      format = '%m/%d/%Y %H:%M')) %>%
-  rename(datetimestamp = date_time_stamp) %>% 
-  select(-monitoring_program, -rep)
-
-# swmpr wants data frame, not tibble
-swmp_fm <- swmpr(as.data.frame(FM_nut), "gtmfmnut")
-rm(FM_nut)
-
-# Pellicer Creek
-PC_nut <- NUT %>%
-  filter(station_code == "gtmpcnut") %>%
-  select(-station_code) %>%
-  mutate(date_time_stamp = as.POSIXct(date_time_stamp,
-                                      tz = timezone,
-                                      format = '%m/%d/%Y %H:%M')) %>%
-  rename(datetimestamp = date_time_stamp) %>% 
-  filter(monitoring_program == 1) %>% 
-  select(-monitoring_program, -rep)
-
-# swmpr wants data frame, not tibble
-swmp_pc <- swmpr(as.data.frame(PC_nut), "gtmpcnut")
-rm(PC_nut)
-# check object
-# class(swmp_pc)
-# str(swmp_pc)
-
-rm(timezone)
+rm(timezone, stations)
 
 ## 04.2 qaqc swmpr --------------------------------------------------------
 
 # use the qaqc functions on the data
-pi_nut <- swmp_pi %>% SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5'))
-ss_nut <- swmp_ss %>% SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5'))
-fm_nut <- swmp_fm %>% SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5'))
-pc_nut <- swmp_pc %>% SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5'))
+pi_nut <- swmp_gtmpinut %>% SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5'))
+ss_nut <- swmp_gtmssnut %>% SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5'))
+fm_nut <- swmp_gtmfmnut %>% SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5'))
+pc_nut <- swmp_gtmpcnut %>% SWMPr::qaqc(qaqc_keep = c('0', '2', '3', '4', '5'))
 
-
-rm(swmp_pi, swmp_ss, swmp_fm,swmp_pc)
+# remove unfiltered data objects
+rm(swmp_gtmpinut, 
+   swmp_gtmssnut, 
+   swmp_gtmfmnut,
+   swmp_gtmpcnut)
 
 
 # 05 aggregate to monthly -------------------------------------------------
@@ -119,13 +91,17 @@ fm_nut_mo <- fm_nut %>% aggreswmp(by = "months")
 pc_nut_mo <- pc_nut %>% aggreswmp(by = "months")
 
 # merge together
-NUT_f <- bind_rows("gtmpinut" = pi_nut_mo, 
-                   "gtmssnut" = ss_nut_mo, 
-                   "gtmfmnut" = fm_nut_mo, 
-                   "gtmpcnut" = pc_nut_mo, 
-                   .id = "station_code")
+# NUT_f <- bind_rows("gtmpinut" = pi_nut_mo, 
+#                    "gtmssnut" = ss_nut_mo, 
+#                    "gtmfmnut" = fm_nut_mo, 
+#                    "gtmpcnut" = pc_nut_mo, 
+#                    .id = "station_code")
 
-NUT_monthly <- NUT_f %>%
+NUT_monthly <- bind_rows("gtmpinut" = pi_nut_mo, 
+                         "gtmssnut" = ss_nut_mo, 
+                         "gtmfmnut" = fm_nut_mo, 
+                         "gtmpcnut" = pc_nut_mo, 
+                         .id = "station_code") %>%
   select(station_code, datetimestamp, tn, tp, chla_n) %>% 
   dplyr::mutate(year = lubridate::year(datetimestamp), 
                 month_abb = lubridate::month(datetimestamp, label = TRUE, abbr = TRUE),
